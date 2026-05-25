@@ -72,14 +72,16 @@
   .progress > i{display:block;height:100%;width:0;background:linear-gradient(90deg,var(--accent),var(--accent2))}
 
   .preview{display:flex;flex-direction:column;gap:12px}
-  .canvas-frame{flex:1;min-height:0;min-width:0;display:flex;align-items:center;justify-content:center;
+  .canvas-frame{flex:1;min-height:0;min-width:0;display:flex;overflow:auto;
     border-radius:14px;border:1px solid var(--line);padding:14px;background:
       linear-gradient(45deg,#171b24 25%,transparent 25%),
       linear-gradient(-45deg,#171b24 25%,transparent 25%),
       linear-gradient(45deg,transparent 75%,#171b24 75%),
       linear-gradient(-45deg,transparent 75%,#171b24 75%);
     background-size:22px 22px;background-position:0 0,0 11px,11px -11px,-11px 0}
-  canvas{max-width:100%;max-height:100%;width:auto;height:auto;min-width:0;min-height:0;border-radius:8px}
+  /* margin:auto centers the canvas when it fits, and resolves to 0 so it
+     scrolls from the top-left when the chosen size overflows the frame. */
+  canvas{margin:auto;width:auto;height:auto;border-radius:8px}
   .hint{flex:0 0 auto;font-size:12.5px;padding:10px 12px;border-radius:9px}
   .hint.ok{background:rgba(54,209,183,.1);color:var(--ok);border:1px solid rgba(54,209,183,.3)}
   .hint.warn{background:rgba(255,170,60,.1);color:#ffb454;border:1px solid rgba(255,170,60,.3)}

@@ -326,7 +326,7 @@ $('sideColor').addEventListener('input',e=>state.sideColor=e.target.value);
 $('lightColorD').addEventListener('input',e=>{state.lightColor=e.target.value;$('lightColor').value=e.target.value;});
 $('rainbow').addEventListener('change',e=>{state.rainbow=e.target.checked;updateClipNote();});
 $('darken').addEventListener('input',e=>{state.darken=e.target.value/100;$('darkenVal').textContent=e.target.value+'%';});
-$('speed').addEventListener('input',e=>{state.speed=e.target.value/100;$('speedVal').textContent=(state.speed).toFixed(1)+'×';updateClipNote();});
+$('speed').addEventListener('input',e=>{state.speed=e.target.value/100;$('speedVal').textContent=(state.speed).toFixed(1)+'×';vid.playbackRate=state.speed;updateClipNote();});
 $('size').addEventListener('input',e=>{state.size=+e.target.value;$('sizeVal').textContent=e.target.value+' px';});
 $('clip').addEventListener('input',e=>{state.clip=+e.target.value;$('clipVal').textContent=(+e.target.value).toFixed(1)+' s';updateClipNote();});
 $('ecl').addEventListener('change',e=>{state.ecl=e.target.value;regenerate();});
@@ -343,7 +343,7 @@ $('videoFile').addEventListener('change',e=>{
   $('filebox').classList.add('has');
   $('filebox').textContent='🎬 '+f.name;
 });
-vid.addEventListener('loadeddata',()=>{ state.videoReady=true; updateClipNote(); });
+vid.addEventListener('loadeddata',()=>{ state.videoReady=true; vid.playbackRate=state.speed; updateClipNote(); });
 vid.addEventListener('error',()=>{ state.videoReady=false; updateClipNote(); });
 
 /* ---------- seamless clip length ----------
@@ -360,7 +360,8 @@ function animationPeriod(){
 function loopDuration(){
   const want = Math.max(1, state.clip);
   if(isVideoMode(state.mode) && state.videoReady && vid.duration){
-    return Math.max(1, Math.round(want / vid.duration)) * vid.duration;
+    const oneLoop = vid.duration / (state.speed||1);   // real seconds per loop at this speed
+    return Math.max(1, Math.round(want / oneLoop)) * oneLoop;
   }
   if(state.mode==='A'){
     const period = animationPeriod();
@@ -491,7 +492,7 @@ $('dlGif').addEventListener('click',async ()=>{
     for(let i=0;i<frames;i++){
       const t=i/fps;
       if(isVideoMode(state.mode) && state.videoReady){
-        vid.currentTime=t % (vid.duration||dur);
+        vid.currentTime=(t*state.speed) % (vid.duration||dur);
         await new Promise(res=>{ const h=()=>{vid.removeEventListener('seeked',h);res();}; vid.addEventListener('seeked',h); setTimeout(res,300); });
       }
       drawFrame(t,tctx,state.size);
