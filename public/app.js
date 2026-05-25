@@ -297,6 +297,8 @@ $('modes').addEventListener('change', e=>{
   $('videoControls').style.display = isVideoMode(state.mode)?'block':'none';
   $('threedControls').style.display = (state.mode==='D')?'block':'none';
   $('animControls').style.display = (state.mode==='A')?'block':'none';
+  // Rainbow only colours the mode-A animation
+  $('rainbowWrap').style.display = (state.mode==='A')?'':'none';
   // 3D has its own color set (tops / sides / board), so hide the generic pair
   $('colorGrid').style.display = (state.mode==='D')?'none':'';
   // Both video modes only need one picker: the video fills the code, so the
