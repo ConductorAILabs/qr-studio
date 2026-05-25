@@ -52,7 +52,10 @@ Vendored under `public/` (both MIT):
 
 ## License
 
-MIT **with required attribution** — see [LICENSE](LICENSE). You're free to use,
-modify and redistribute it, but any use or public deployment must give clear,
-visible credit to **Conductor AI Labs** with a link to https://conductorailabs.com/
-(for apps with a UI, the credit must be visible to end users).
+[Creative Commons Attribution 4.0 International (CC BY 4.0)](LICENSE) ©
+2026 Conductor AI Labs.
+
+You're free to use, share and adapt this work, including commercially, **as long
+as you give appropriate credit**: attribute it to **Conductor AI Labs** with a
+link to https://conductorailabs.com/. For apps with a UI, keep that credit
+visible to end users (e.g. an About screen, footer, or credits section).
