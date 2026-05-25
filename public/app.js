@@ -381,6 +381,19 @@ function download(blob,name){
 // settings mid-render or accidentally navigate away. Both exports go through
 // setProgress, so locking here covers them all.
 function beforeUnloadGuard(e){ e.preventDefault(); e.returnValue=''; return ''; }
+// 2-minute safety net: if a save makes no progress for 2 minutes (e.g. a GIF
+// worker that never fires 'finished'), force-cancel it so the page can't stay
+// stuck behind the saving overlay. The active export registers how to abort
+// itself via `cancelSave`; the timer is reset on every progress tick, so it
+// only fires on a genuine stall — not on a slow-but-advancing render.
+let saveWatchdog=null, cancelSave=null;
+function saveTimedOut(){
+  saveWatchdog=null;
+  const c=cancelSave; cancelSave=null;
+  try{ if(c) c(); }catch(_){}
+  setProgress(null);
+  alert('Saving timed out after 2 minutes. Try a shorter clip or a smaller size.');
+}
 function setProgress(p){
   const bar=$('progress'); bar.style.display = p==null?'none':'block';
   if(p!=null) bar.firstElementChild.style.width=Math.round(p*100)+'%';
@@ -388,6 +401,9 @@ function setProgress(p){
   $('saveLock').style.display = saving ? 'flex' : 'none';
   if(saving) window.addEventListener('beforeunload', beforeUnloadGuard);
   else window.removeEventListener('beforeunload', beforeUnloadGuard);
+  if(saveWatchdog){ clearTimeout(saveWatchdog); saveWatchdog=null; }
+  if(saving) saveWatchdog=setTimeout(saveTimedOut, 120000);
+  else cancelSave=null;
 }
 
 // PNG — single frame
@@ -427,11 +443,13 @@ $('dlWebm').addEventListener('click',()=>{
     recording=false; setProgress(null); return;
   }
   const chunks=[]; const rec=new MediaRecorder(stream,{mimeType:mime});
+  let aborted=false;
   rec.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
-  rec.onstop=()=>{ download(new Blob(chunks,{type:mime}), 'qr.'+(mime.includes('mp4')?'mp4':'webm'));
+  rec.onstop=()=>{ if(!aborted) download(new Blob(chunks,{type:mime}), 'qr.'+(mime.includes('mp4')?'mp4':'webm'));
                    recording=false; setProgress(null); };
-  // Never leave the page locked if recording fails partway through.
+  // Never leave the page locked if recording fails or stalls partway through.
   rec.onerror=()=>{ recording=false; setProgress(null); };
+  cancelSave=()=>{ aborted=true; recording=false; try{ rec.stop(); }catch(_){} };
   try{ rec.start(); }
   catch(err){ recording=false; setProgress(null); alert('Recording could not start. Use the GIF export instead.'); return; }
 
@@ -463,6 +481,7 @@ $('dlGif').addEventListener('click',async ()=>{
     const frames=Math.round(fps*dur);
     const gif=new GIF({workers:2,quality:8,width:state.size,height:state.size,
                        workerScript:'gif.worker.js'});
+    cancelSave=()=>{ renderingGif=false; if(wasPlaying)vid.play().catch(()=>{}); try{ gif.abort(); }catch(_){} };
     const tmp=document.createElement('canvas'); tmp.width=tmp.height=state.size;
     const tctx=tmp.getContext('2d',{willReadFrequently:true});
     setProgress(0);
