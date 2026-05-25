@@ -1,4 +1,4 @@
-# QR Studio
+# Conductor QR Code Creator
 
 QR codes that aren't boring — animated, video-backed, or 3D — that still scan.
 It runs entirely in the browser: no build step, no backend, nothing uploaded.

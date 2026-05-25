@@ -1,4 +1,4 @@
-/* QR Studio — client-side QR generator (animated / video / 3D).
+/* Conductor QR Code Creator — client-side QR generator (animated / video / 3D).
    Renders to a <canvas> and exports PNG, WebM and GIF. No backend. */
 'use strict';
 const $ = id => document.getElementById(id);
