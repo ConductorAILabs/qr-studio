@@ -1,0 +1,8 @@
+node_modules/
+.netlify/
+.DS_Store
+*.log
+
+# Local assets / experiments, not part of the app
+public/conductord-id.mp4
+3d/
