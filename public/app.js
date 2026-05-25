@@ -8,7 +8,7 @@ const vid = $('vid');
 const state = {
   payload: $('payload').value,
   mode: 'A',
-  anim: 'wave',         // mode A animation style: wave | ripple | twinkle | sweep
+  anim: 'wave',         // mode A animation style: wave | ripple | twinkle | swirl
   size: 512,
   ecl: 'H',
   speed: 1.0,
@@ -430,7 +430,10 @@ $('dlWebm').addEventListener('click',()=>{
   rec.ondataavailable=e=>{ if(e.data.size) chunks.push(e.data); };
   rec.onstop=()=>{ download(new Blob(chunks,{type:mime}), 'qr.'+(mime.includes('mp4')?'mp4':'webm'));
                    recording=false; setProgress(null); };
-  rec.start();
+  // Never leave the page locked if recording fails partway through.
+  rec.onerror=()=>{ recording=false; setProgress(null); };
+  try{ rec.start(); }
+  catch(err){ recording=false; setProgress(null); alert('Recording could not start. Use the GIF export instead.'); return; }
 
   // Drive frames from elapsed ACTIVE time. dt is capped so that if the tab is
   // hidden (rAF + video both pause) we neither fast-forward the animation nor
@@ -452,28 +455,36 @@ let renderingGif=false;
 $('dlGif').addEventListener('click',async ()=>{
   if(renderingGif) return;
   renderingGif=true;
-  const fps=12;
-  const dur=loopDuration();
-  const frames=Math.round(fps*dur);
-  const gif=new GIF({workers:2,quality:8,width:state.size,height:state.size,
-                     workerScript:'gif.worker.js'});
-  const tmp=document.createElement('canvas'); tmp.width=tmp.height=state.size;
-  const tctx=tmp.getContext('2d',{willReadFrequently:true});
-  setProgress(0);
-  const wasPlaying=!vid.paused; vid.pause();
-  for(let i=0;i<frames;i++){
-    const t=i/fps;
-    if(isVideoMode(state.mode) && state.videoReady){
-      vid.currentTime=t % (vid.duration||dur);
-      await new Promise(res=>{ const h=()=>{vid.removeEventListener('seeked',h);res();}; vid.addEventListener('seeked',h); setTimeout(res,300); });
+  let wasPlaying=false;
+  const release=()=>{ setProgress(null); renderingGif=false; if(wasPlaying)vid.play().catch(()=>{}); };
+  try{
+    const fps=12;
+    const dur=loopDuration();
+    const frames=Math.round(fps*dur);
+    const gif=new GIF({workers:2,quality:8,width:state.size,height:state.size,
+                       workerScript:'gif.worker.js'});
+    const tmp=document.createElement('canvas'); tmp.width=tmp.height=state.size;
+    const tctx=tmp.getContext('2d',{willReadFrequently:true});
+    setProgress(0);
+    wasPlaying=!vid.paused; vid.pause();
+    for(let i=0;i<frames;i++){
+      const t=i/fps;
+      if(isVideoMode(state.mode) && state.videoReady){
+        vid.currentTime=t % (vid.duration||dur);
+        await new Promise(res=>{ const h=()=>{vid.removeEventListener('seeked',h);res();}; vid.addEventListener('seeked',h); setTimeout(res,300); });
+      }
+      drawFrame(t,tctx,state.size);
+      gif.addFrame(tctx,{copy:true,delay:1000/fps});
+      setProgress(i/frames*0.6);
     }
-    drawFrame(t,tctx,state.size);
-    gif.addFrame(tctx,{copy:true,delay:1000/fps});
-    setProgress(i/frames*0.6);
+    gif.on('progress',p=>setProgress(0.6+p*0.4));
+    gif.on('finished',blob=>{ download(blob,'qr.gif'); release(); });
+    gif.on('abort',release);
+    gif.render();
+  }catch(err){
+    release();   // never leave the page locked if the render throws
+    alert('Sorry — the GIF could not be generated. Try a shorter clip or a smaller size.');
   }
-  gif.on('progress',p=>setProgress(0.6+p*0.4));
-  gif.on('finished',blob=>{ download(blob,'qr.gif'); setProgress(null); renderingGif=false; if(wasPlaying)vid.play().catch(()=>{}); });
-  gif.render();
 });
 
 /* ---------- init ---------- */
