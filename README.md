@@ -3,7 +3,7 @@
 QR codes that aren't boring — animated, video-backed, or 3D — that still scan.
 It runs entirely in the browser: no build step, no backend, nothing uploaded.
 
-Live: https://video-qr-maker.netlify.app
+Live: https://conductor-qr.netlify.app
 
 ## Styles
 
@@ -52,4 +52,7 @@ Vendored under `public/` (both MIT):
 
 ## License
 
-MIT — see [LICENSE](LICENSE).
+MIT **with required attribution** — see [LICENSE](LICENSE). You're free to use,
+modify and redistribute it, but any use or public deployment must give clear,
+visible credit to **Conductor AI Labs** with a link to https://conductorailabs.com/
+(for apps with a UI, the credit must be visible to end users).

@@ -19,8 +19,8 @@ const state = {
   lightColor: '#ffffff',
   topColor: '#0b0d12',  // mode D: top face of each block (the scannable code)
   sideColor: '#b9c0cf', // mode D: block side walls (right face; bottom is derived darker)
-  heightFrac: 0.6,      // mode D: block rise as a fraction of module size
-  lightAngle: 135,      // mode D: shadow direction in degrees
+  heightFrac: 0.3,      // mode D: block rise as a fraction of module size
+  lightAngle: 100,      // mode D: shadow direction in degrees
   matrix: null,       // {n, dark:[[bool]], finder:[[bool]], ecl}
   videoReady: false,
 };
@@ -289,6 +289,7 @@ function ensureDefaultVideo(){
 }
 
 /* ---------- wire up controls ---------- */
+let sizedFor3D=false;   // apply 3D's default size only on the first switch to 3D
 $('payload').addEventListener('input', e=>{ state.payload=e.target.value; regenerate(); });
 $('modes').addEventListener('change', e=>{
   if(e.target.name!=='mode') return;
@@ -299,6 +300,10 @@ $('modes').addEventListener('change', e=>{
   $('animControls').style.display = (state.mode==='A')?'block':'none';
   // Rainbow only colours the mode-A animation
   $('rainbowWrap').style.display = (state.mode==='A')?'':'none';
+  // 3D's preferred default size (first time only — don't fight later tweaks)
+  if(state.mode==='D' && !sizedFor3D){
+    sizedFor3D=true; state.size=576; $('size').value=576; $('sizeVal').textContent='576 px';
+  }
   // 3D has its own color set (tops / sides / board), so hide the generic pair
   $('colorGrid').style.display = (state.mode==='D')?'none':'';
   // Both video modes only need one picker: the video fills the code, so the

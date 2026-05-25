@@ -1,6 +1,6 @@
-MIT License
+MIT License (with required attribution)
 
-Copyright (c) 2026 Conductor AI Labs
+Copyright (c) 2026 Conductor AI Labs (https://conductorailabs.com/)
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal
@@ -9,8 +9,15 @@ to use, copy, modify, merge, publish, distribute, sublicense, and/or sell
 copies of the Software, and to permit persons to whom the Software is
 furnished to do so, subject to the following conditions:
 
-The above copyright notice and this permission notice shall be included in all
-copies or substantial portions of the Software.
+1. The above copyright notice and this permission notice shall be included in
+   all copies or substantial portions of the Software.
+
+2. Attribution is required. Any use, distribution, or public deployment of the
+   Software — including modified or derivative versions — must give clear,
+   visible credit to "Conductor AI Labs" together with a link to
+   https://conductorailabs.com/. For any application with a user interface,
+   this credit must be visible to end users (for example, in an About screen,
+   footer, or credits section).
 
 THE SOFTWARE IS PROVIDED "AS IS", WITHOUT WARRANTY OF ANY KIND, EXPRESS OR
 IMPLIED, INCLUDING BUT NOT LIMITED TO THE WARRANTIES OF MERCHANTABILITY,

@@ -82,7 +82,7 @@
   /* margin:auto centers the canvas when it fits, and resolves to 0 so it
      scrolls from the top-left when the chosen size overflows the frame. */
   canvas{margin:auto;width:auto;height:auto;border-radius:8px}
-  .hint{flex:0 0 auto;font-size:12.5px;padding:10px 12px;border-radius:9px}
+  .hint{flex:0 0 auto;font-size:12.5px;padding:10px 12px;border-radius:9px;text-align:center}
   .hint.ok{background:rgba(54,209,183,.1);color:var(--ok);border:1px solid rgba(54,209,183,.3)}
   .hint.warn{background:rgba(255,170,60,.1);color:#ffb454;border:1px solid rgba(255,170,60,.3)}
   .note{color:var(--muted);font-size:11px;text-align:center}
@@ -152,10 +152,10 @@
         </div>
         <label>Light (board)</label>
         <input id="lightColorD" type="color" value="#ffffff" />
-        <label>Block height <span class="val" id="heightVal">60%</span></label>
-        <input id="height" type="range" min="0" max="120" value="60" />
-        <label>Light angle <span class="val" id="lightAngleVal">135°</span></label>
-        <input id="lightAngle" type="range" min="0" max="360" value="135" />
+        <label>Block height <span class="val" id="heightVal">30%</span></label>
+        <input id="height" type="range" min="0" max="120" value="30" />
+        <label>Light angle <span class="val" id="lightAngleVal">100°</span></label>
+        <input id="lightAngle" type="range" min="0" max="360" value="100" />
       </div>
 
       <div class="grid2" id="colorGrid">
