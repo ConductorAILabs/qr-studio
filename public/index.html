@@ -93,6 +93,13 @@
     .preview{order:-1}
     .canvas-frame{min-height:300px}
   }
+  .savelock{position:fixed;inset:0;z-index:100;display:none;align-items:center;justify-content:center;
+    background:rgba(8,10,16,.82);backdrop-filter:blur(2px);padding:24px;text-align:center}
+  .savelock-box{max-width:340px;color:var(--txt);font-size:15px;line-height:1.45}
+  .savelock-spinner{width:34px;height:34px;margin:0 auto 14px;border-radius:50%;
+    border:3px solid var(--line);border-top-color:var(--accent);animation:spin 1s linear infinite}
+  .savelock-sub{color:var(--muted);font-size:12px;margin-top:8px}
+  @keyframes spin{to{transform:rotate(360deg)}}
 </style>
 </head>
 <body>
@@ -101,14 +108,14 @@
     <div class="logo">▶</div>
     <div>
       <h1>Conductor QR Code Creator</h1>
-      <div class="sub">Animated, video &amp; 3D QR codes that still scan</div>
+      <div class="sub">Animated, video &amp; 3D QR codes</div>
     </div>
   </header>
 
   <main class="wrap">
     <section class="panel controls">
       <label>Link the QR points to</label>
-      <input id="payload" type="url" value="https://www.youtube.com/watch?v=dQw4w9WgXcQ" placeholder="https://..." />
+      <input id="payload" type="url" value="https://conductorailabs.com/" placeholder="https://..." />
 
       <label>Style</label>
       <div class="modes" id="modes">
@@ -116,6 +123,16 @@
         <label class="mode"><input type="radio" name="mode" value="B" /><span class="t">B</span><span class="k">Video</span></label>
         <label class="mode"><input type="radio" name="mode" value="C" /><span class="t">C</span><span class="k">Video BG</span></label>
         <label class="mode"><input type="radio" name="mode" value="D" /><span class="t">D</span><span class="k">3D</span></label>
+      </div>
+
+      <div id="animControls">
+        <label>Animation</label>
+        <select id="animType">
+          <option value="wave">Wave — diagonal pulse</option>
+          <option value="ripple">Ripple — out from center</option>
+          <option value="twinkle">Twinkle — random sparkle</option>
+          <option value="swirl">Swirl — spinning spiral</option>
+        </select>
       </div>
 
       <div id="videoControls" style="display:none">
@@ -127,21 +144,25 @@
       </div>
 
       <div id="threedControls" style="display:none">
+        <div class="grid2">
+          <div><label>Block tops</label><input id="topColor" type="color" value="#0b0d12" /></div>
+          <div><label>Block sides</label><input id="sideColor" type="color" value="#b9c0cf" /></div>
+        </div>
+        <label>Light (board)</label>
+        <input id="lightColorD" type="color" value="#ffffff" />
         <label>Block height <span class="val" id="heightVal">60%</span></label>
         <input id="height" type="range" min="0" max="120" value="60" />
         <label>Light angle <span class="val" id="lightAngleVal">135°</span></label>
         <input id="lightAngle" type="range" min="0" max="360" value="135" />
-        <label>Light strength <span class="val" id="lightStrengthVal">80%</span></label>
-        <input id="lightStrength" type="range" min="0" max="120" value="80" />
+      </div>
+
+      <div class="grid2" id="colorGrid">
+        <div id="darkColorWrap"><label>Code color</label><input id="darkColor" type="color" value="#0b0d12" /></div>
+        <div><label id="lightColorLabel">Background</label><input id="lightColor" type="color" value="#ffffff" /></div>
       </div>
 
       <div class="grid2">
-        <div><label>Code color</label><input id="darkColor" type="color" value="#0b0d12" /></div>
-        <div><label>Background</label><input id="lightColor" type="color" value="#ffffff" /></div>
-      </div>
-
-      <div class="grid2">
-        <div><label>Speed <span class="val" id="speedVal">1.0×</span></label><input id="speed" type="range" min="20" max="300" value="100" /></div>
+        <div id="speedWrap"><label>Speed <span class="val" id="speedVal">1.0×</span></label><input id="speed" type="range" min="20" max="300" value="100" /></div>
         <div><label>Size <span class="val" id="sizeVal">512&nbsp;px</span></label><input id="size" type="range" min="256" max="1024" step="64" value="512" /></div>
       </div>
 
@@ -155,6 +176,12 @@
           </select>
         </div>
         <label class="check" style="padding-bottom:10px"><input type="checkbox" id="rainbow" checked /> Rainbow (mode A)</label>
+      </div>
+
+      <div id="clipWrap">
+        <label>Clip length <span class="val" id="clipVal">5.0&nbsp;s</span></label>
+        <input id="clip" type="range" min="1" max="30" step="0.5" value="5" />
+        <div class="note" id="clipNote" style="margin-top:6px">Clip length up to 30 seconds.</div>
       </div>
 
       <label>Download</label>
@@ -172,6 +199,14 @@
       <div class="note">Runs entirely in your browser — nothing is uploaded.</div>
     </section>
   </main>
+</div>
+
+<div id="saveLock" class="savelock">
+  <div class="savelock-box">
+    <div class="savelock-spinner"></div>
+    <div>Saving your QR code…</div>
+    <div class="savelock-sub">Keep this tab open and don’t switch away until it finishes.</div>
+  </div>
 </div>
 
 <video id="vid" playsinline muted loop crossorigin="anonymous" style="display:none"></video>
